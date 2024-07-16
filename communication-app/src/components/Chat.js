@@ -33,12 +33,19 @@ const Chat = () => {
     };
   }, []);
 
-  const sendMessage = () => {
-    socket.emit('message', { message, userId });
-    setMessages((prevMessages) => [...prevMessages, { type: 'text', content: message, userId }]);
-    setMessage('');
-  };
+  // const sendMessage = () => {
+  //   socket.emit('message', { message, userId });
+  //   setMessages((prevMessages) => [...prevMessages, { type: 'text', content: message, userId }]);
+  //   setMessage('');
+  // };
 
+  const sendMessage = () => {
+    if (userId) {
+      socket.emit('message', { message, userId });
+      setMessage('');
+    }
+  };
+  
   const renderFile = (file) => {
     const { fileType, content } = file;
     if (fileType.startsWith('image')) {
@@ -59,9 +66,9 @@ const Chat = () => {
         {messages.map((msg, index) => (
           <div key={index} style={{ textAlign: msg.userId === userId ? 'right' : 'left' }}>
             {msg.type === 'text' ? (
-              <div className="text-message">11{msg.content}</div>
+              <div className="text-message">{msg.content}</div>
             ) : (
-              <div className="file-message">22{renderFile(msg)}</div>
+              <div className="file-message">{renderFile(msg)}</div>
             )}
           </div>
         ))}
