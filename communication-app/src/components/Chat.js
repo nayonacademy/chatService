@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import socket from '../socket';
+import './ChatWindow.css';
 
 const Chat = () => {
   const [message, setMessage] = useState('');
@@ -47,19 +48,26 @@ const Chat = () => {
 
   return (
     <div>
-      <div>
+      <div className="message-container">
         {messages.map((msg, index) => (
-          <div key={index}>
-            {msg.type === 'text' ? msg.content : renderFile(msg)}
+          <div key={index} className="message">
+            {msg.type === 'text' ? (
+              <div className="text-message">{msg.content}</div>
+            ) : (
+              <div className="file-message">{renderFile(msg)}</div>
+            )}
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div className="input-container">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="message-input"
+        />
+        <button onClick={sendMessage} className="send-button">Send</button>
+      </div>
     </div>
   );
 };
