@@ -15,9 +15,14 @@ const Chat = () => {
       setMessages((prevMessages) => [...prevMessages, { type: 'image', content: imagePath }]);
     });
 
+    socket.on('file', (file) => {
+      setMessages((prevMessages) => [...prevMessages, { type: 'file', content: file.filePath, fileType: file.fileType }]);
+    });
+
     return () => {
       socket.off('message');
       socket.off('image');
+      socket.off('file');
     };
   }, []);
 
@@ -26,12 +31,26 @@ const Chat = () => {
     setMessage('');
   };
 
+  const renderFile = (file) => {
+    const { fileType, content } = file;
+    if (fileType.startsWith('image')) {
+      return <img src={content} alt="Uploaded" style={{ maxWidth: '200px' }} />;
+    }
+    if (fileType.startsWith('video')) {
+      return <video src={content} controls style={{ maxWidth: '200px' }} />;
+    }
+    if (fileType === 'application/pdf') {
+      return <a href={content} target="_blank" rel="noopener noreferrer">View PDF</a>;
+    }
+    return null;
+  };
+
   return (
     <div>
       <div>
         {messages.map((msg, index) => (
           <div key={index}>
-            {msg.type === 'text' ? msg.content : <img src={msg.content} alt="Uploaded" style={{ maxWidth: '200px' }} />}
+            {msg.type === 'text' ? msg.content : renderFile(msg)}
           </div>
         ))}
       </div>
