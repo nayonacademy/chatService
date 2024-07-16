@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const PhotoUpload = () => {
+const PhotoUpload = ({ userId }) => {
   const [file, setFile] = useState(null);
 
   const handleFileChange = (event) => {
@@ -11,6 +11,7 @@ const PhotoUpload = () => {
   const handleUpload = async () => {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('userId', userId); // Include the user ID
 
     const response = await axios.post('http://localhost:8000/uploads', formData, {
       headers: {

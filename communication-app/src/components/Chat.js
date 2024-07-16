@@ -3,13 +3,19 @@ import socket from '../socket';
 import './ChatWindow.css';
 
 const Chat = () => {
+  const [images, setImages] = useState([]);
+  const [userId, setUserId] = useState(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [images, setImages] = useState([]);
 
   useEffect(() => {
-    socket.on('message', (message) => {
-      setMessages((prevMessages) => [...prevMessages, { type: 'text', content: message }]);
+
+    socket.on('user-id', (id) => {
+      setUserId(id);
+    });
+
+    socket.on('message', (data) => {
+      setMessages((prevMessages) => [...prevMessages, { type: 'text', content: data.message, userId: data.userId }]);
     });
 
     socket.on('image', (imagePath) => {
@@ -17,7 +23,7 @@ const Chat = () => {
     });
 
     socket.on('file', (file) => {
-      setMessages((prevMessages) => [...prevMessages, { type: 'file', content: file.filePath, fileType: file.fileType }]);
+      setMessages((prevMessages) => [...prevMessages, { type: 'file', content: file.filePath, fileType: file.fileType, userId: file.userId }]);
     });
 
     return () => {
@@ -28,7 +34,8 @@ const Chat = () => {
   }, []);
 
   const sendMessage = () => {
-    socket.emit('message', message);
+    socket.emit('message', { message, userId });
+    setMessages((prevMessages) => [...prevMessages, { type: 'text', content: message, userId }]);
     setMessage('');
   };
 
@@ -50,11 +57,11 @@ const Chat = () => {
     <div>
       <div className="message-container">
         {messages.map((msg, index) => (
-          <div key={index} className="message">
+          <div key={index} style={{ textAlign: msg.userId === userId ? 'right' : 'left' }}>
             {msg.type === 'text' ? (
-              <div className="text-message">{msg.content}</div>
+              <div className="text-message">11{msg.content}</div>
             ) : (
-              <div className="file-message">{renderFile(msg)}</div>
+              <div className="file-message">22{renderFile(msg)}</div>
             )}
           </div>
         ))}
